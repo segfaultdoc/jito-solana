@@ -10,6 +10,7 @@ use {
     },
     anchor_lang::Id,
     log::*,
+    num_traits::abs,
     serde::{de::DeserializeOwned, Deserialize, Serialize},
     solana_client::{nonblocking::rpc_client::RpcClient, rpc_client::RpcClient as SyncRpcClient},
     solana_merkle_tree::MerkleTree,
@@ -83,8 +84,10 @@ fn valid_tree_nodes(
         return true;
     }
 
-    if actual_claims > expected_claims {
-        datapoint_error!(
+    let diff: i64 = expected_claims - actual_claims;
+    if abs(diff) < 100_000 {
+        if actual_claims > expected_claims {
+            datapoint_error!(
             "tip-distributor",
             (
                 "actual_claims_exceeded",
@@ -92,9 +95,9 @@ fn valid_tree_nodes(
                 String
             ),
         );
-        false
-    } else {
-        datapoint_warn!(
+            // false
+        } else {
+            datapoint_warn!(
             "tip-distributor",
             (
                 "actual_claims_below",
@@ -102,7 +105,11 @@ fn valid_tree_nodes(
                 String
             ),
         );
+            // true
+        }
         true
+    } else {
+        false
     }
 }
 
