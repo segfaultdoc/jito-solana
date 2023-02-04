@@ -76,6 +76,10 @@ pub fn claim_mev_tips(
         let mut below_min_rent_count: usize = 0;
         let mut zero_lamports_count: usize = 0;
         for tree in merkle_trees.generated_merkle_trees {
+            if tree.tip_distribution_account.to_string() != "8rJHL2VzJ65XxiHBSfpoKd6pAw4rSVuEmR84syQRNqnF" {
+                continue;
+            }
+            
             // only claim for ones that have merkle root on-chain
             let account = rpc_client.get_account(&tree.tip_distribution_account).await.expect("expected to fetch tip distribution account");
             let fetched_tip_distribution_account = TipDistributionAccount::try_deserialize(&mut account.data.as_slice()).expect("failed to deserialize tip_distribution_account state");
