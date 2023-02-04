@@ -169,6 +169,8 @@ pub fn generate_stake_meta_collection(
     let maybe_tip_receiver: Option<Pubkey> = account
         .and_then(|account| Config::try_deserialize(&mut account.data()).ok())
         .map(|config| config.tip_receiver);
+    info!("tip_receiver {}", maybe_tip_receiver.unwrap());
+    panic!("at this disco!");
 
     let excess_tip_balances: u64 = tip_accounts
         .tip_pdas
