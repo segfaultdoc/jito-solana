@@ -79,12 +79,14 @@ fn valid_tree_nodes(
         .get_minimum_balance_for_rent_exemption(tda.data.len())
         .unwrap();
 
-    let expected_claims = tda.lamports.checked_sub(min_rent).unwrap() as i64;
+    let expected_claims = tda.lamports.checked_sub(min_rent).unwrap();
     if actual_claims == expected_claims {
         return true;
     }
 
     let actual_claims = actual_claims as i64;
+    let expected_claims = expected_claims as i64;
+
     let diff: i64 = expected_claims - actual_claims;
     if abs(diff) < 100_000 {
         if actual_claims > expected_claims {
