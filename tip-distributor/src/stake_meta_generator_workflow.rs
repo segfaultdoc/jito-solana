@@ -169,9 +169,6 @@ pub fn generate_stake_meta_collection(
     let maybe_tip_receiver: Option<Pubkey> = account
         .and_then(|account| Config::try_deserialize(&mut account.data()).ok())
         .map(|config| config.tip_receiver);
-    info!("tip_receiver {}", maybe_tip_receiver.unwrap());
-    panic!("at this disco!");
-
     let excess_tip_balances: u64 = tip_accounts
         .tip_pdas
         .iter()
@@ -185,6 +182,15 @@ pub fn generate_stake_meta_collection(
                 .unwrap_or_default()
         })
         .sum();
+    let tda = bank.get_account(&maybe_tip_receiver.unwrap()).unwrap();
+    info!(
+        "tip_receiver {}, excess_tip_balance {}, tda amount {}, tda + excess {}",
+        maybe_tip_receiver.unwrap(),
+        excess_tip_balances,
+        tda.lamports(),
+        tda.lamports() + excess_tip_balances,
+    );
+    panic!("at this disco!");
 
     let vote_pk_and_maybe_tdas: Vec<(
         (Pubkey, &VoteAccount),
