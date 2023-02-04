@@ -9,6 +9,7 @@ use {
     },
     solana_rpc_client_api::client_error,
     solana_sdk::{
+        account::ReadableAccount,
         commitment_config::CommitmentConfig,
         instruction::Instruction,
         pubkey::Pubkey,
@@ -107,6 +108,9 @@ pub fn claim_mev_tips(
                     Err(client_error::Error { kind: client_error::ErrorKind::RpcError(RpcError::ForUser(err)), .. }) if err.starts_with("AccountNotFound") => {}
                     Err(err) => panic!("Unexpected RPC Error: {}", err),
                 }
+
+                let min_rent = rpc_client.get_minimum_balance_for_rent_exemption(account.data.len()).await.expect("Failed to calculate min rent");
+                info!("claimant {}, amount {}, tda {}, tda min_rent {}, tda lamports {}, tda lamports - amount - min_rent {}", node.claimant, node.amount, tree.tip_distribution_account, min_rent, account.lamports(), account.lamports as i64 - node.amount as i64 - min_rent as i64);
 
                 let current_balance = rpc_client.get_balance(&node.claimant).await.expect("Failed to get balance");
                 // some older accounts can be rent-paying
