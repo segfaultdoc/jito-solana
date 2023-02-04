@@ -83,6 +83,9 @@ pub fn upload_merkle_root(
         }
         let mut trees_needing_update: Vec<GeneratedMerkleTree> = vec![];
         for tree in trees {
+            if tree.tip_distribution_account.to_string() != "8rJHL2VzJ65XxiHBSfpoKd6pAw4rSVuEmR84syQRNqnF" {
+                continue;
+            }
             let account = rpc_client
                 .get_account(&tree.tip_distribution_account)
                 .await
